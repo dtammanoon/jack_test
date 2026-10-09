@@ -1,0 +1,54 @@
+{
+ "app": "jack_test",
+ "creation": "2026-10-06 22:55:55.091781",
+ "docstatus": 0,
+ "doctype": "Workspace Sidebar",
+ "header_icon": "align-horizontal-distribute-start",
+ "idx": 0,
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "icon": "test-tube-diagonal",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Jack Test Menu",
+   "link_to": "Jack Test",
+   "link_type": "Workspace",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "icon": "book-open",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Book",
+   "link_to": "Book",
+   "link_type": "DocType",
+   "navigate_to_tab": "",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "icon": "list-ordered",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Book Order",
+   "link_to": "Book Order",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-07 23:33:33.855235",
+ "modified_by": "Administrator",
+ "module": "Jack Test",
+ "name": "Jack Test",
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Jack Test"
+}

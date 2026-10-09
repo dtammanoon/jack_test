@@ -5,6 +5,17 @@ app_description = "Jack Test"
 app_email = "dtammanoon@gmail.com"
 app_license = "mit"
 
+fixtures = [
+    {
+        "dt": "Server Script",
+        "filters": [["module", "=", "Jack Test"]] # เปลี่ยนจาก "-" เป็น "="
+    },
+    {
+        "dt": "Client Script",
+        "filters": [["module", "=", "Jack Test"]] # เปลี่ยนจาก "-" เป็น "="
+    }
+]
+
 # Apps
 # ------------------
 

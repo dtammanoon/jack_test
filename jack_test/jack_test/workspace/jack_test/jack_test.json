@@ -1,0 +1,47 @@
+{
+ "app": "jack_test",
+ "charts": [],
+ "content": "[{\"id\":\"qRt3lYN13e\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the Jack Test workspace</span>\",\"col\":12}},{\"id\":\"3qE-sipd3b\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Book\",\"col\":3}},{\"id\":\"-RvZnscwzv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Book Order\",\"col\":3}}]",
+ "creation": "2026-10-06 22:55:55.048787",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "test-tube-diagonal",
+ "idx": 1,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Jack Test",
+ "link_type": "DocType",
+ "links": [],
+ "modified": "2026-10-07 23:38:46.734495",
+ "modified_by": "Administrator",
+ "module": "Jack Test",
+ "name": "Jack Test",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 0.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Book Order",
+   "link_to": "Book Order",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Book",
+   "link_to": "Book",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Jack Test",
+ "type": "Workspace"
+}
