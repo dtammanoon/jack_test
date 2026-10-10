@@ -25,9 +25,17 @@ def update_ordered_qty(doc, method=None):
 		"Book Order", filters={"docstatus": 1}, pluck="name"
 	)
 	book_qty = {}
+	for item in doc.items:
+		if item.book:
+			book_qty[item.book] = 0
+
+	if doc.docstatus == 1 and doc.name not in orders:
+		orders.append(doc.name)
 
 	for order_name in orders:
-		order = frappe.get_doc("Book Order", order_name)
+		if order_name == doc.name and doc.docstatus == 2:
+			continue
+		order = doc if order_name == doc.name else frappe.get_doc("Book Order", order_name)
 		for item in order.items:
 			book_qty[item.book] = book_qty.get(item.book, 0) + item.quantity
 
