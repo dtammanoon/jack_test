@@ -16,6 +16,16 @@ fixtures = [
     }
 ]
 
+doc_events = {
+    "Book Order": {
+        "before_save": "jack_test.jack_test.doctype.book_order.book_order.compute_total",
+        "before_submit": "jack_test.jack_test.doctype.book_order.book_order.confirm_date",
+        "on_submit": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
+        "on_cancel": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
+    }
+}
+
+
 # Apps
 # ------------------
 
