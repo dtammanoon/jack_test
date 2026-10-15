@@ -5,6 +5,16 @@ app_description = "Jack Test"
 app_email = "dtammanoon@gmail.com"
 app_license = "mit"
 
+add_to_apps_screen = [
+    {
+        "name": "sale",
+        "logo": "/assets/jack_test/images/pos.png", # ชี้มาที่โฟลเดอร์ public/images ที่เราสร้างไว้
+        "title": "POS",
+        "route": "/desk/stock/point-of-sale",
+        "is_query_link": True
+    }
+]
+
 fixtures = [
     {
         "dt": "Server Script",
