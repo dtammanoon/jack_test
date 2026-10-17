@@ -35,6 +35,12 @@ doc_events = {
     }
 }
 
+# เพิ่มต่อท้ายไฟล์ hooks.py เดิมของคุณ
+doc_events = {
+    "POS Invoice": {
+        "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
+    }
+}
 
 # Apps
 # ------------------
