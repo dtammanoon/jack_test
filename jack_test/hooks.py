@@ -32,15 +32,18 @@ doc_events = {
         "before_submit": "jack_test.jack_test.doctype.book_order.book_order.confirm_date",
         "on_submit": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
         "on_cancel": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
-    }
+    },
+    "POS Invoice": {
+        "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
+    }    
 }
 
 # เพิ่มต่อท้ายไฟล์ hooks.py เดิมของคุณ
-doc_events = {
-    "POS Invoice": {
-        "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
-    }
-}
+#doc_events = {
+#    "POS Invoice": {
+#        "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
+#    }
+#}
 
 # Apps
 # ------------------
