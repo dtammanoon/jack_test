@@ -5,15 +5,24 @@ app_description = "Jack Test"
 app_email = "dtammanoon@gmail.com"
 app_license = "mit"
 
+# ให้มีชุดนี้ชุดเดียว และลบชุดที่ประกาศซ้ำด้านล่างทิ้งให้หมดครับ
 add_to_apps_screen = [
     {
+        "name": "select_branch",
+        "logo": "/assets/jack_test/images/branch.png", 
+        "title": "Branch",
+        "route": "/app/workspace/Home?action=select_branch", # ชี้กลับมาหน้าแรกเพื่อไม่ให้ Not Found และส่งพารามิเตอร์ไปดักจับ
+        "is_query_link": True        
+    },
+    {
         "name": "sale",
-        "logo": "/assets/jack_test/images/pos.png", # ชี้มาที่โฟลเดอร์ public/images ที่เราสร้างไว้
+        "logo": "/assets/jack_test/images/pos.png", 
         "title": "POS",
         "route": "/desk/stock/point-of-sale",
         "is_query_link": True
-    }
+    }    
 ]
+
 
 fixtures = [
     {
@@ -32,11 +41,45 @@ doc_events = {
         "before_submit": "jack_test.jack_test.doctype.book_order.book_order.confirm_date",
         "on_submit": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
         "on_cancel": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
-    },
-    "POS Invoice": {
-        "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
-    }    
+    }
+    #,
+    #"POS Invoice": {
+    #    "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
+    #}
+    #,
+    #"GL Entry": {
+    #    "before_insert": "jack_test.api.gl_entry.force_branch_dimension"
+    #}
+    #,
+    # 🎯 เพิ่มบรรทัดดักจับสิทธิ์พิเศษตัวนี้เข้าไปครับคุณแจ็ก!
+    ## สั่งให้ระบบวิ่งมารันฟังก์ชันดีดหน้าจอของเราทุกครั้งที่พนักงานกด Save เปลี่ยนค่า Defaults บนหน้าจอ
+    #"User": {
+    #    "before_save": "jack_test.api.force_redirect_after_save"
+    #}        
 }
+
+# แก้ไขเพิ่มในไฟล์ hooks.py ครับคุณแจ็ก
+
+# ผูกเรื่องให้ระบบแผงไอคอนเรียกใช้งานฟังก์ชันจัดกระดานไอคอน (ทำตามขั้นตอนเดิม)
+# extend_bootinfo = "jack_test.api.clean_apps_screen"
+
+app_include_js = "/assets/jack_test/js/apps_screen_fix.js"
+
+# บังคับลบหรือปิดฟังก์ชันนี้ออกจากระบบ Global Request เพื่อหยุดการรันมั่วซั่วทุกหน้าจอครับ
+# before_request = ["jack_test.api.force_redirect_after_save"]
+
+# หรือปล่อยว่างไว้แบบนี้
+# before_request = []
+
+# override_whitelisted_methods = {}
+
+# ส่วนสำคัญ (เพิ่มช่องทางดักกระแสไฟ): สั่งให้ระบบวิ่งมาตรวจเช็กฟังก์ชันดีดหน้าจอของเราทุกครั้งที่มีการยิงคำสั่งในระบบ
+# on_session_expiry = "jack_test.api.force_redirect_after_save"
+# before_request = ["jack_test.api.force_redirect_after_save"]
+
+# แก้ไขบรรทัดนี้ใน hooks.py ให้ตรงตามฟังก์ชันที่มีอยู่จริง
+# boot_session = "jack_test.api.set_session_defaults"
+
 
 # เพิ่มต่อท้ายไฟล์ hooks.py เดิมของคุณ
 #doc_events = {
