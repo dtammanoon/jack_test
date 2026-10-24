@@ -41,21 +41,7 @@ doc_events = {
         "before_submit": "jack_test.jack_test.doctype.book_order.book_order.confirm_date",
         "on_submit": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
         "on_cancel": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
-    }
-    #,
-    #"POS Invoice": {
-    #    "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
-    #}
-    #,
-    #"GL Entry": {
-    #    "before_insert": "jack_test.api.gl_entry.force_branch_dimension"
-    #}
-    #,
-    # 🎯 เพิ่มบรรทัดดักจับสิทธิ์พิเศษตัวนี้เข้าไปครับคุณแจ็ก!
-    ## สั่งให้ระบบวิ่งมารันฟังก์ชันดีดหน้าจอของเราทุกครั้งที่พนักงานกด Save เปลี่ยนค่า Defaults บนหน้าจอ
-    #"User": {
-    #    "before_save": "jack_test.api.force_redirect_after_save"
-    #}        
+    }       
 }
 
 # แก้ไขเพิ่มในไฟล์ hooks.py ครับคุณแจ็ก

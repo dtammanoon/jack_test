@@ -2,6 +2,28 @@
  {
   "docstatus": 0,
   "doctype": "Client Script",
+  "dt": "Workspace",
+  "enabled": 1,
+  "modified": "2026-10-24 19:24:17.580101",
+  "module": "Jack Test",
+  "name": "Branch Selection Popup",
+  "script": "frappe.ui.form.on('Workspace', {\n    refresh: function(frm) {\n        // ดักจับเศษพารามิเตอร์ที่แนบมาจากไอคอนลัดใน hooks.py\n        if (window.location.href.indexOf('action=select_branch') !== -1) {\n            \n            setTimeout(() => {\n                if (typeof frappe.ui.toolbar.setup_session_defaults === \"function\") {\n                    \n                    // 1. บังคับเปิดหน้าต่างระบบ Session Defaults ให้เลือกสาขา\n                    frappe.ui.toolbar.setup_session_defaults();\n                    \n                    // ล้างพารามิเตอร์บนช่อง URL ทันทีเพื่อให้หน้าเว็บสะอาด\n                    window.history.replaceState({}, document.title, window.location.pathname);\n                    \n                    // 2. แก้ปัญหา Forced Reflow บล็อก:\n                    // ดักจับเมื่อระบบเซฟค่าสาขาและส่งข้อมูลเครือข่ายเสร็จสิ้น\n                    $(document).ajaxComplete(function(event, xhr, settings) {\n                        if (settings.url.indexOf('frappe.core.doctype.user.user.set_defaults') !== -1 || \n                            settings.url.indexOf('set_session_defaults') !== -1) {\n                            \n                            // ใช้การหน่วงเวลาสั้นๆ เพื่อให้ระบบ Core บันทึกค่าลงฐานข้อมูลเสร็จสมบูรณ์ก่อน\n                            setTimeout(() => {\n                                // คำสั่งระดับน็อคเอาท์: บังคับเปิดหน้าต่างระบบ /apps ขึ้นมาทับเบราว์เซอร์เดิมทันที\n                                // วิธีนี้จะทลายปัญหา Forced Reflow ทิ้ง 100% เพราะถือเป็นการสั่งโหลดตัวเว็บใหม่ทั้งระบบจากหน้าแรกครับ\n                                window.location.open = window.location.assign('/apps');\n                            }, 300);\n                        }\n                    });\n                }\n            }, 500);\n        }\n    }\n});\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "User",
+  "enabled": 1,
+  "modified": "2026-10-24 19:23:21.705450",
+  "module": "Jack Test",
+  "name": "Branch Select By User",
+  "script": "// เขียนคำสั่งแบบสากล ครอบคลุมทั้งระบบการเปลี่ยนหน้าจอ Desk\n$(document).on('page-change', function() {\n    let current_route = frappe.get_route();\n    \n    // ตรวจสอบเงื่อนไข: หากผู้ใช้อยู่หน้าแรก (Workspace) และมีสัญญาณบังคับล็อกอินเลือกสาขาจากฝั่ง Python\n    if (current_route && current_route === 'workspace' && frappe.boot.force_branch_dialog === 1) {\n        \n        // หน่วงเวลาสั้นๆ เพื่อรอให้ระบบ Core UI ของเวอร์ชัน 16 โหลดวัตถุหน้าจอเสร็จสมบูรณ์\n        setTimeout(() => {\n            if (typeof frappe.ui.toolbar.setup_session_defaults === \"function\") {\n                \n                // สั่งระเบิดป็อปอัปสลับสาขามาตรฐานของระบบขึ้นมาทันที\n                frappe.ui.toolbar.setup_session_defaults();\n                \n                // ล้างค่าตัวแปรทิ้งชั่วคราว เพื่อไม่ให้ป็อปอัปเด้งซ้ำซ้อนตอนพนักงานกดเปลี่ยนหน้าย่อย\n                frappe.boot.force_branch_dialog = 0;\n            }\n        }, 500); \n    }\n});\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
   "dt": "Book Order",
   "enabled": 1,
   "modified": "2026-10-08 15:09:39.550048",

@@ -28,32 +28,44 @@
 })();
 
 // =========================================================
-// ส่วนที่ 2: ดักจับคำสั่ง API บันทึก Session Defaults โดยตรง เพื่อดีดกลับ Desktop
+// ส่วนที่ 2: หลังบันทึก Session Defaults ให้กลับ Desktop (/apps) แบบเสถียร
 // =========================================================
-$(document).ready(function() {
-    //console.warn("=========================================================");
-    //console.warn("[Jack Test] 🛰️ Debug Ajax 2");
-    //console.warn("=========================================================");     
-    // ใช้ ajaxSuccess เพื่อจับสัญญานเครือข่ายหลังจากระบบบันทึกข้อมูลสาขาสำเร็จ
-    $(document).ajaxSuccess(function(event, xhr, settings) {
-        
-        // 1. เจาะจงตรวจเซ็กว่า API ตัวที่ส่งสำเร็จ คือตัวบันทึกค่า Defaults ของระบบ Frappe ใช่ไหม
-        let isSetDefaultsApi = settings.url && settings.url.includes('set_session_default_values');
+(() => {
+    const FLAG_KEY = "jack_test_redirect_to_apps";
+    const TARGET_PATH = "/apps";
 
-        //console.warn("settings.url :", settings.url);
-        //console.warn("settings.url.includes :", settings.url.includes('set_session_default_values'));
-
-        //debugger; 
-
-        // 2. ถ้าใช่คำสั่งบันทึกสาขาชัวร์ๆ ให้ทำตามแผนทันที
-        if (isSetDefaultsApi) {
-            
-            // หน่วงเวลาสั้นๆ 0.4 วินาที เพื่อให้ระบบหลังบ้านจัดการ Session เรียบร้อย
-            setTimeout(() => {
-                let target_apps_url = window.location.origin + '/apps';
-                window.location.assign(target_apps_url);
-            }, 400);
+    // 2.1 ตรวจตอนโหลดหน้า: ถ้ามี flag ค้างจากการบันทึก Session Defaults ให้ไป /apps
+    //     (ทำงานทันทีที่ไฟล์โหลด ไม่ต้องรอ document.ready ลดการเห็นหน้าเดิมแวบหนึ่ง)
+    try {
+        if (sessionStorage.getItem(FLAG_KEY)) {
+            sessionStorage.removeItem(FLAG_KEY);
+            if (window.location.pathname.replace(/\/+$/, "") !== TARGET_PATH) {
+                window.location.replace(window.location.origin + TARGET_PATH);
+                return; // หยุด ไม่ต้องผูก event ต่อ เพราะกำลังเปลี่ยนหน้า
+            }
         }
-    });
-});
+    } catch (e) {
+        console.warn("[Jack Test] sessionStorage unavailable", e);
+    }
 
+    // 2.2 ดักจับ API บันทึก Session Defaults
+    $(document).ajaxSuccess(function (event, xhr, settings) {
+        const url = settings && settings.url ? settings.url : "";
+        if (!url.includes("set_session_default_values")) return;
+
+        // บันทึกจริงสำเร็จเท่านั้น (Frappe ส่ง message = "success")
+        const msg = xhr.responseJSON && xhr.responseJSON.message;
+        if (msg && msg !== "success") return;
+
+        // ฝาก flag ไว้ก่อน ไม่ว่า Frappe จะ reload หรือไม่ หน้าถัดไปจะพาไป /apps เอง
+        try {
+            sessionStorage.setItem(FLAG_KEY, "1");
+        } catch (e) {}
+
+        // Fallback: ถ้าเวอร์ชันไหนไม่ได้สั่ง reload เลย ให้ไปเองหลังรอพอสมควร
+        // (ถ้า reload เกิดก่อน timer นี้จะถูกยกเลิกไปเอง ไม่มีผลเสีย)
+        setTimeout(() => {
+            window.location.assign(window.location.origin + TARGET_PATH);
+        }, 2000);
+    });
+})();
