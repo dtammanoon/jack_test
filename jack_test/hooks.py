@@ -49,7 +49,15 @@ doc_events = {
 # ผูกเรื่องให้ระบบแผงไอคอนเรียกใช้งานฟังก์ชันจัดกระดานไอคอน (ทำตามขั้นตอนเดิม)
 # extend_bootinfo = "jack_test.api.clean_apps_screen"
 
-app_include_js = "/assets/jack_test/js/apps_screen_fix.js"
+# app_include_js = "/assets/jack_test/js/apps_screen_fix.js"
+
+app_include_js = [
+    "/assets/jack_test/js/apps_screen_fix.js",
+    "/assets/jack_test/js/branch_company_address.js",
+    "/assets/jack_test/js/branch_purchase_address.js",
+    "/assets/jack_test/js/quotation_from_supplier.js"
+]
+
 
 # บังคับลบหรือปิดฟังก์ชันนี้ออกจากระบบ Global Request เพื่อหยุดการรันมั่วซั่วทุกหน้าจอครับ
 # before_request = ["jack_test.api.force_redirect_after_save"]
