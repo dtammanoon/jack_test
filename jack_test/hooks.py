@@ -44,12 +44,6 @@ doc_events = {
     }       
 }
 
-# แก้ไขเพิ่มในไฟล์ hooks.py ครับคุณแจ็ก
-
-# ผูกเรื่องให้ระบบแผงไอคอนเรียกใช้งานฟังก์ชันจัดกระดานไอคอน (ทำตามขั้นตอนเดิม)
-# extend_bootinfo = "jack_test.api.clean_apps_screen"
-
-# app_include_js = "/assets/jack_test/js/apps_screen_fix.js"
 
 app_include_js = [
     "/assets/jack_test/js/apps_screen_fix.js",
@@ -58,29 +52,14 @@ app_include_js = [
     "/assets/jack_test/js/quotation_from_supplier.js"
 ]
 
+# ทำให้เอกสาร Reset ตามวันที่ในเอกสาร โดยใช้ตัวแปร DOCYYYY, DOCYY, DOCMM ใน Naming Series
+# ดูตัวอย่างการจาก Request for Quotation ที่ใช้ตัวแปร DOCYYYY, DOCYY, DOCMM ใน Naming Series
+naming_series_variables = {
+    "DOCYYYY": "jack_test.naming.parse_doc_date",
+    "DOCYY": "jack_test.naming.parse_doc_date",
+    "DOCMM": "jack_test.naming.parse_doc_date"
+}
 
-# บังคับลบหรือปิดฟังก์ชันนี้ออกจากระบบ Global Request เพื่อหยุดการรันมั่วซั่วทุกหน้าจอครับ
-# before_request = ["jack_test.api.force_redirect_after_save"]
-
-# หรือปล่อยว่างไว้แบบนี้
-# before_request = []
-
-# override_whitelisted_methods = {}
-
-# ส่วนสำคัญ (เพิ่มช่องทางดักกระแสไฟ): สั่งให้ระบบวิ่งมาตรวจเช็กฟังก์ชันดีดหน้าจอของเราทุกครั้งที่มีการยิงคำสั่งในระบบ
-# on_session_expiry = "jack_test.api.force_redirect_after_save"
-# before_request = ["jack_test.api.force_redirect_after_save"]
-
-# แก้ไขบรรทัดนี้ใน hooks.py ให้ตรงตามฟังก์ชันที่มีอยู่จริง
-# boot_session = "jack_test.api.set_session_defaults"
-
-
-# เพิ่มต่อท้ายไฟล์ hooks.py เดิมของคุณ
-#doc_events = {
-#    "POS Invoice": {
-#        "before_save": "jack_test.api.pos_invoice.set_branch_from_pos_profile"
-#    }
-#}
 
 # Apps
 # ------------------
