@@ -49,7 +49,8 @@ app_include_js = [
     "/assets/jack_test/js/apps_screen_fix.js",
     "/assets/jack_test/js/branch_company_address.js",
     "/assets/jack_test/js/branch_purchase_address.js",
-    "/assets/jack_test/js/quotation_from_supplier.js"
+    "/assets/jack_test/js/quotation_from_supplier.js",
+    "/assets/jack_test/js/sync_session_defaults.js"
 ]
 
 # ทำให้เอกสาร Reset ตามวันที่ในเอกสาร โดยใช้ตัวแปร DOCYYYY, DOCYY, DOCMM ใน Naming Series
@@ -57,7 +58,7 @@ app_include_js = [
 naming_series_variables = {
     "DOCYYYY": "jack_test.naming.parse_doc_date",
     "DOCYY": "jack_test.naming.parse_doc_date",
-    "DOCMM": "jack_test.naming.parse_doc_date"
+    "DOCMM": "jack_test.naming.parse_doc_date"    
 }
 
 # patch ทุก request และทุก background job (รวม Prepared Report)

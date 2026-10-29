@@ -53,17 +53,18 @@
         const url = settings && settings.url ? settings.url : "";
         if (!url.includes("set_session_default_values")) return;
 
-        // บันทึกจริงสำเร็จเท่านั้น (Frappe ส่ง message = "success")
+        // ถ้ามาจาก auto-sync ตอนเปิด DocType ไม่ต้อง redirect
+        const data = settings.data;
+        const dataStr = typeof data === "string" ? data : JSON.stringify(data || {});
+        if (dataStr.includes("jack_silent_sync")) return;
+
         const msg = xhr.responseJSON && xhr.responseJSON.message;
         if (msg && msg !== "success") return;
 
-        // ฝาก flag ไว้ก่อน ไม่ว่า Frappe จะ reload หรือไม่ หน้าถัดไปจะพาไป /apps เอง
         try {
             sessionStorage.setItem(FLAG_KEY, "1");
         } catch (e) {}
 
-        // Fallback: ถ้าเวอร์ชันไหนไม่ได้สั่ง reload เลย ให้ไปเองหลังรอพอสมควร
-        // (ถ้า reload เกิดก่อน timer นี้จะถูกยกเลิกไปเอง ไม่มีผลเสีย)
         setTimeout(() => {
             window.location.assign(window.location.origin + TARGET_PATH);
         }, 2000);
