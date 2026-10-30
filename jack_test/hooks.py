@@ -70,6 +70,12 @@ override_whitelisted_methods = {
         "jack_test.overrides.ledger_preview.show_accounting_ledger_preview",
 }
 
+jinja = {
+    "methods": [
+        "jack_test.utils.qr.get_qr_base64",
+    ]
+}
+
 # Apps
 # ------------------
 
