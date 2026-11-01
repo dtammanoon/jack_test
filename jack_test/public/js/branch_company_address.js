@@ -1,65 +1,91 @@
-const BRANCH_ADDR_DOCTYPES = {
-    'Sales Order':   'customer',
-    'Delivery Note': 'customer',
-    'Sales Invoice': 'customer'
-};
+(() => {
+    // Quotation แยกไปอยู่ไฟล์ quotation_from_supplier.js แล้ว
+    const BRANCH_ADDR_DOCTYPES = {
+        'Sales Order':   'customer',
+        'Delivery Note': 'customer',
+        'Sales Invoice': 'customer',
+    };
 
-//    'Quotation':     'party_name',
+    // ฟิลด์ใน Branch Address : [ฟิลด์ที่อยู่, ฟิลด์ display] ในเอกสารขาย
+    const FIELD_MAP = {
+        billing_address: ['company_address', 'company_address_display'],
+    };
 
-// เอกสารใหม่จริงๆ = ยังไม่ Save, ไม่ใช่ Amend และยังไม่มีรายการสินค้า
-// (เอกสารที่สร้างต่อจากใบก่อนหน้าหรือ Duplicate จะมีรายการสินค้าติดมาตั้งแต่เปิดฟอร์ม)
-function is_fresh_new(frm) {
-    return frm.is_new()
-        && !frm.doc.amended_from
-        && !(frm.doc.items || []).some(row => row.item_code);
-}
+    const RETRY_DELAYS = [800, 2000, 3500];
 
-function set_branch_company_address(frm) {
-    if (!frm._branch_addr_fresh || !frm.is_new() || !frm.doc.branch) return;
+    function session_branch() {
+        return frappe.defaults.get_user_default('branch')
+            || frappe.defaults.get_user_default('Branch');
+    }
 
-    frappe.db.get_value('Branch Address', { branch: frm.doc.branch }, 'billing_address')
-        .then(r => {
-            const addr = r.message && r.message.billing_address;
-            if (addr && frm.is_new() && frm.doc.company_address !== addr) {
-                frm.set_value('company_address', addr);
-            }
+    // เอกสารใหม่ที่ยังไม่ Save (รวมที่ map มาจาก SO/DN) และไม่ใช่ Amend
+    function is_valid_new(frm) {
+        return frm.is_new() && !frm.doc.amended_from;
+    }
+
+    async function set_address(frm, addr_field, display_field, addr) {
+        if (frm.doc[addr_field] !== addr) {
+            await frm.set_value(addr_field, addr);
+        }
+        if (!display_field || !frm.fields_dict[display_field]) return;
+
+        const r = await frappe.call({
+            method: 'frappe.contacts.doctype.address.address.get_address_display',
+            args: { address_dict: addr },
         });
-}
+        if (r.message && frm.is_new() && frm.doc[addr_field] === addr) {
+            await frm.set_value(display_field, r.message);
+        }
+    }
 
-Object.entries(BRANCH_ADDR_DOCTYPES).forEach(([dt, party_field]) => {
-    frappe.ui.form.on(dt, {
-        setup(frm) {
-            frm.set_query('company_address', () => ({ filters: {} }));
-        },
+    async function apply_branch_address(frm) {
+        if (!is_valid_new(frm)) return;
 
-        onload(frm) {
-            // เช็คครั้งเดียวตอนเปิดฟอร์ม แล้วจำไว้
-            frm._branch_addr_fresh = is_fresh_new(frm);
-            if (!frm._branch_addr_fresh) return;
+        if (frm.fields_dict.branch && !frm.doc.branch) {
+            const b = session_branch();
+            if (b) await frm.set_value('branch', b);
+        }
 
-            if (!frm.doc.branch) {
-                const b = frappe.defaults.get_user_default('branch')
-                       || frappe.defaults.get_user_default('Branch');
-                if (b) frm.doc.branch = b;   // ใส่ค่าตรงๆ ไม่ trigger event
+        const branch = frm.fields_dict.branch ? frm.doc.branch : session_branch();
+        if (!branch) return;
+
+        const targets = Object.entries(FIELD_MAP)
+            .filter(([, [addr_field]]) => frm.fields_dict[addr_field]);
+        if (!targets.length) return;
+
+        // ดึงเฉพาะชื่อที่อยู่ (get_value ไม่อนุญาตฟิลด์ *_display)
+        const r = await frappe.db.get_value('Branch Address', { branch }, targets.map(([src]) => src));
+        const v = r.message || {};
+        if (!frm.is_new()) return;
+
+        for (const [src, [addr_field, display_field]] of targets) {
+            if (v[src]) {
+                await set_address(frm, addr_field, display_field, v[src]);
             }
-        },
+        }
+    }
 
-        refresh(frm) {
-            if (frm._branch_addr_fresh && frm.is_new() && !frm._branch_addr_done) {
-                frm._branch_addr_done = true;
-                frm.refresh_field('branch');
-                frappe.after_ajax(() => set_branch_company_address(frm));
-            }
-        },
+    Object.entries(BRANCH_ADDR_DOCTYPES).forEach(([dt, party_field]) => {
+        frappe.ui.form.on(dt, {
+            refresh(frm) {
+                if (is_valid_new(frm) && !frm._branch_addr_done) {
+                    frm._branch_addr_done = true;
+                    frappe.after_ajax(() => apply_branch_address(frm));
+                    RETRY_DELAYS.forEach(ms => setTimeout(() => apply_branch_address(frm), ms));
+                }
+            },
 
-        // ERPNext จะเขียน company_address ทับเมื่อเลือกลูกค้าหรือบริษัท
-        // ถ้าไม่ใส่กลับ ที่อยู่สาขาจะหายทันทีที่ผู้ใช้เลือกลูกค้า
-        [party_field](frm) {
-            frappe.after_ajax(() => set_branch_company_address(frm));
-        },
+            [party_field](frm) {
+                frappe.after_ajax(() => apply_branch_address(frm));
+            },
 
-        company(frm) {
-            frappe.after_ajax(() => set_branch_company_address(frm));
-        },
+            company(frm) {
+                frappe.after_ajax(() => apply_branch_address(frm));
+            },
+
+            branch(frm) {
+                frappe.after_ajax(() => apply_branch_address(frm));
+            },
+        });
     });
-});
+})();
