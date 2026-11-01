@@ -62,9 +62,10 @@ naming_series_variables = {
     "DOCMM": "jack_test.naming.parse_doc_date"    
 }
 
+# เอา Acoount Name ออกจาก General Ledger
 # patch ทุก request และทุก background job (รวม Prepared Report)
-before_request = ["jack_test.overrides.general_ledger.apply_patch"]
-before_job = ["jack_test.overrides.general_ledger.apply_patch"]
+# before_request = ["jack_test.overrides.general_ledger.apply_patch"]
+# before_job = ["jack_test.overrides.general_ledger.apply_patch"]
 
 override_whitelisted_methods = {
     "erpnext.controllers.stock_controller.show_accounting_ledger_preview":
