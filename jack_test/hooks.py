@@ -51,7 +51,8 @@ app_include_js = [
     "/assets/jack_test/js/branch_purchase_address.js",
     "/assets/jack_test/js/quotation_from_supplier.js",
     "/assets/jack_test/js/sync_session_defaults.js",
-    "/assets/jack_test/js/camera_focus_fix.js?v=4"
+    "/assets/jack_test/js/camera_focus_fix.js?v=4",
+    "/assets/jack_test/js/branch_payment_entry_address.js"
 ]
 
 # ทำให้เอกสาร Reset ตามวันที่ในเอกสาร โดยใช้ตัวแปร DOCYYYY, DOCYY, DOCMM ใน Naming Series
