@@ -69,6 +69,10 @@ naming_series_variables = {
 # before_request = ["jack_test.overrides.general_ledger.apply_patch"]
 # before_job = ["jack_test.overrides.general_ledger.apply_patch"]
 
+before_request = [
+    "jack_test.jack_test.overrides.gross_profit.install"
+]
+
 override_whitelisted_methods = {
     "erpnext.controllers.stock_controller.show_accounting_ledger_preview":
         "jack_test.overrides.ledger_preview.show_accounting_ledger_preview",
@@ -89,6 +93,10 @@ for dt in SHELF_DOCTYPES:
     if dt not in doc_events:
         doc_events[dt] = {}
     doc_events[dt]["validate"] = "jack_test.stock_shelf.validate_shelf"
+
+before_request = [
+    "jack_test.jack_test.overrides.gross_profit.install"
+]
 
 # Apps
 # ------------------
