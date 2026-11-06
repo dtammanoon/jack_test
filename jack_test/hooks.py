@@ -40,7 +40,7 @@ doc_events = {
         "before_save": "jack_test.jack_test.doctype.book_order.book_order.compute_total",
         "before_submit": "jack_test.jack_test.doctype.book_order.book_order.confirm_date",
         "on_submit": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
-        "on_cancel": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
+        "on_cancel": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty"
     }       
 }
 
@@ -52,7 +52,8 @@ app_include_js = [
     "/assets/jack_test/js/quotation_from_supplier.js",
     "/assets/jack_test/js/sync_session_defaults.js",
     "/assets/jack_test/js/camera_focus_fix.js?v=4",
-    "/assets/jack_test/js/branch_payment_entry_address.js"
+    "/assets/jack_test/js/branch_payment_entry_address.js",
+    "/assets/jack_test/js/shelf_filter.js"
 ]
 
 # ทำให้เอกสาร Reset ตามวันที่ในเอกสาร โดยใช้ตัวแปร DOCYYYY, DOCYY, DOCMM ใน Naming Series
@@ -78,6 +79,16 @@ jinja = {
         "jack_test.utils.qr.get_qr_base64",
     ]
 }
+
+SHELF_DOCTYPES = ["Stock Entry","Purchase Receipt","Purchase Invoice","Delivery Note","Sales Invoice",
+                  "POS Invoice","Stock Reconciliation","Pick List","Subcontracting Receipt","Putaway Rule"]
+
+
+# เติม event validate สำหรับ Shelf ให้ครบทุก DocType ในลิสต์
+for dt in SHELF_DOCTYPES:
+    if dt not in doc_events:
+        doc_events[dt] = {}
+    doc_events[dt]["validate"] = "jack_test.stock_shelf.validate_shelf"
 
 # Apps
 # ------------------

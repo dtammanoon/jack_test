@@ -1,0 +1,38 @@
+{
+ "add_total_row": 0,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2026-11-06 16:48:08.955979",
+ "disable_prepared_report_automation": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "doctype_to_sync": [],
+ "filters": [{"company":"Exam","from_date":"2026-01-01","to_date":"2026-12-31","include_returned_invoices":1}
+],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": null,
+ "modified": "2026-11-06 16:48:08.955979",
+ "modified_by": "Administrator",
+ "module": "Jack Test",
+ "name": "Gross Profit Chart",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Sales Invoice",
+ "report_name": "Gross Profit Chart",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Sales User"
+  }
+ ],
+ "snapshot_report": 0,
+ "timeout": 0
+}
