@@ -1,0 +1,81 @@
+{
+ "add_total_row": 0,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2026-11-10 14:26:34.295103",
+ "disable_prepared_report_automation": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "doctype_to_sync": [],
+ "filters": [
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "mandatory": 0,
+   "options": "Item",
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "serial_no",
+   "fieldtype": "Data",
+   "label": "Serial No",
+   "mandatory": 0,
+   "options": "",
+   "wildcard_filter": 0
+  }
+ ],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": null,
+ "modified": "2026-11-10 15:15:09.232602",
+ "modified_by": "Administrator",
+ "module": "Jack Test",
+ "name": "Serial Cost Grade Traceability",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "\nSELECT\n    sn.name AS \"Serial No:Link/Serial No:150\",\n    sn.item_code AS \"Item Code:Link/Item:150\",\n\n    CASE\n        WHEN sn.item_code LIKE '%%-B-S' THEN 'B'\n        WHEN sn.item_code LIKE '%%-S' THEN 'A'\n        ELSE 'Other'\n    END AS \"Grade:Data:70\",\n\n    origin.incoming_rate AS \"Actual Cost/Unit:Currency:120\",\n    origin.posting_datetime AS \"Cost Date:Datetime:145\",\n\n    origin.voucher_no AS \"Origin Voucher:Data:160\",\n    origin.warehouse AS \"Origin Warehouse:Link/Warehouse:150\",\n\n    prev.previous_serials AS \"Previous Serial (A):Data:180\",\n    prev.repack_docs AS \"Repack Document:Data:160\",\n\n    nxt.next_serials AS \"Next Serial (B):Data:180\",\n\n    sn.status AS \"Current Status:Data:100\",\n    sn.warehouse AS \"Current Warehouse:Link/Warehouse:150\",\n    sn.customer AS \"Customer:Data:150\"\n\nFROM `tabSerial No` sn\n\n/* \u0e15\u0e49\u0e19\u0e17\u0e38\u0e19\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32\u0e04\u0e23\u0e31\u0e49\u0e07\u0e41\u0e23\u0e01\u0e02\u0e2d\u0e07 Serial \u0e19\u0e35\u0e49 */\nLEFT JOIN `tabSerial and Batch Entry` origin\n    ON origin.name = (\n        SELECT e.name\n        FROM `tabSerial and Batch Entry` e\n        WHERE e.serial_no = sn.name\n          AND e.item_code = sn.item_code\n          AND e.type_of_transaction = 'Inward'\n          AND e.qty > 0\n          AND e.is_cancelled = 0\n          AND e.docstatus = 1\n        ORDER BY e.posting_datetime ASC, e.creation ASC\n        LIMIT 1\n    )\n\n/* Serial \u0e40\u0e14\u0e34\u0e21\u0e17\u0e35\u0e48\u0e16\u0e39\u0e01\u0e19\u0e33\u0e21\u0e32 Repack \u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e2a\u0e23\u0e49\u0e32\u0e07 Serial \u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19 */\nLEFT JOIN (\n    SELECT\n        e.fg_serial_no,\n        GROUP_CONCAT(\n            DISTINCT old_sn.serial_no\n            ORDER BY old_sn.serial_no\n            SEPARATOR ', '\n        ) AS previous_serials,\n\n        GROUP_CONCAT(\n            DISTINCT e.voucher_no\n            ORDER BY e.voucher_no\n            SEPARATOR ', '\n        ) AS repack_docs\n\n    FROM `tabSerial and Batch Entry` e\n\n    INNER JOIN `tabSerial No` old_sn\n        ON old_sn.name = e.serial_no\n\n    WHERE e.fg_serial_no IS NOT NULL\n      AND e.fg_serial_no != ''\n      AND e.is_cancelled = 0\n      AND e.docstatus = 1\n\n    GROUP BY e.fg_serial_no\n) prev\n    ON prev.fg_serial_no = sn.name\n\n/* Serial \u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19\u0e16\u0e39\u0e01\u0e19\u0e33\u0e44\u0e1b\u0e2a\u0e23\u0e49\u0e32\u0e07 Serial \u0e43\u0e2b\u0e21\u0e48\u0e15\u0e31\u0e27\u0e43\u0e14 */\nLEFT JOIN (\n    SELECT\n        e.serial_no,\n\n        GROUP_CONCAT(\n            DISTINCT new_sn.serial_no\n            ORDER BY new_sn.serial_no\n            SEPARATOR ', '\n        ) AS next_serials\n\n    FROM `tabSerial and Batch Entry` e\n\n    INNER JOIN `tabSerial No` new_sn\n        ON new_sn.name = e.fg_serial_no\n\n    WHERE e.fg_serial_no IS NOT NULL\n      AND e.fg_serial_no != ''\n      AND e.is_cancelled = 0\n      AND e.docstatus = 1\n\n    GROUP BY e.serial_no\n) nxt\n    ON nxt.serial_no = sn.name\n\nWHERE\n    (\n        IFNULL(%(from_date)s, '') = ''\n        OR DATE(origin.posting_datetime) >= %(from_date)s\n    )\n\n    AND (\n        IFNULL(%(to_date)s, '') = ''\n        OR DATE(origin.posting_datetime) <= %(to_date)s\n    )\n\n    AND (\n        IFNULL(%(item_code)s, '') = ''\n        OR sn.item_code = %(item_code)s\n    )\n\n    AND (\n        IFNULL(%(serial_no)s, '') = ''\n        OR sn.serial_no LIKE CONCAT('%%', %(serial_no)s, '%%')\n    )\n\n    AND (\n        IFNULL(%(grade)s, '') = ''\n        OR CASE\n            WHEN sn.item_code LIKE '%%-B-S' THEN 'B'\n            WHEN sn.item_code LIKE '%%-S' THEN 'A'\n            ELSE 'Other'\n        END = %(grade)s\n    )\n\nORDER BY\n    origin.posting_datetime DESC,\n    sn.serial_no ASC\n",
+ "ref_doctype": "Serial No",
+ "report_name": "Serial Cost Grade Traceability",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Item Manager"
+  },
+  {
+   "role": "Stock Manager"
+  },
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Delivery Manager"
+  },
+  {
+   "role": "Delivery User"
+  },
+  {
+   "role": "Maintenance User"
+  },
+  {
+   "role": "Quality Manager"
+  }
+ ],
+ "snapshot_report": 0,
+ "timeout": 0
+}
