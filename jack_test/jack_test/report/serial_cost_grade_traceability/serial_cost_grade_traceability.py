@@ -52,6 +52,19 @@ def execute(filters=None):
             "width": 120
         },        
         {
+            "fieldname": "latest_voucher",
+            "label": "Latest Voucher",
+            "fieldtype": "Dynamic Link",
+            "options": "latest_voucher_type",
+            "width": 170
+        },
+        {
+            "fieldname": "latest_voucher_type",
+            "label": "Latest Voucher Type",
+            "fieldtype": "Data",
+            "hidden": 1
+        },        
+        {
             "fieldname": "previous_serials",
             "label": "Previous Serial (A)",
             "fieldtype": "Data",
@@ -101,7 +114,37 @@ def execute(filters=None):
             "label": "Customer",
             "fieldtype": "Data",
             "width": 150
-        }
+        },
+        {
+            "fieldname": "warranty_start_date",
+            "label": "Warranty Start Date",
+            "fieldtype": "Date",
+            "width": 120
+        },
+        {
+            "fieldname": "warranty_period",
+            "label": "Warranty Period (Days)",
+            "fieldtype": "Int",
+            "width": 130
+        },
+        {
+            "fieldname": "warranty_expiry_date",
+            "label": "Warranty Expiry Date",
+            "fieldtype": "Date",
+            "width": 130
+        },
+        {
+            "fieldname": "amc_expiry_date",
+            "label": "AMC Expiry Date",
+            "fieldtype": "Date",
+            "width": 120
+        },
+        {
+            "fieldname": "maintenance_status",
+            "label": "Maintenance Status",
+            "fieldtype": "Data",
+            "width": 140
+        }        
     ]
 
 
@@ -139,22 +182,6 @@ def execute(filters=None):
         conditions.append("sn.name IN %(serial_nos)s")
         values["serial_nos"] = tuple(serial_nos)
         
-    # if filters.get("serial_no"):
-    #     conditions.append(
-    #         "sn.serial_no LIKE %(serial_pattern)s"
-    #     )
-    #     values["serial_pattern"] = "%" + filters.serial_no + "%"
-
-    # if filters.get("grade"):
-    #     conditions.append("""
-    #         CASE
-    #             WHEN RIGHT(sn.item_code, 4) = '-B-S' THEN 'B'
-    #             WHEN RIGHT(sn.item_code, 2) = '-S' THEN 'A'
-    #             ELSE 'Other'
-    #         END = %(grade)s
-    #     """)
-    #     values["grade"] = filters.grade
-
     where_clause = ""
     if conditions:
         where_clause = "WHERE " + " AND ".join(conditions)
@@ -178,11 +205,20 @@ def execute(filters=None):
             sn.status AS current_status,
             sn.warehouse AS current_warehouse,
             sn.customer AS customer,
+            
+            DATE(warranty_start.posting_datetime) AS warranty_start_date,
+            sn.warranty_period AS warranty_period,
+            sn.warranty_expiry_date AS warranty_expiry_date,
+            sn.amc_expiry_date AS amc_expiry_date,
+            sn.maintenance_status AS maintenance_status,            
+            
             CASE
                 WHEN IFNULL(sn.warehouse, '') != ''
                 THEN latest_detail.to_shelf
                 ELSE NULL
-            END AS target_shelf            
+            END AS target_shelf,
+            latest_entry.voucher_no AS latest_voucher,
+            latest_entry.voucher_type AS latest_voucher_type        
         FROM `tabSerial No` sn
 
         LEFT JOIN `tabSerial and Batch Entry` origin
@@ -298,7 +334,22 @@ def execute(filters=None):
             LIMIT 1
         )
     LEFT JOIN `tabStock Entry Detail` latest_detail
-        ON latest_detail.name = latest_entry.voucher_detail_no            
+        ON latest_detail.name = latest_entry.voucher_detail_no      
+    LEFT JOIN `tabSerial and Batch Entry` warranty_start
+        ON warranty_start.name = (
+            SELECT ws.name
+            FROM `tabSerial and Batch Entry` ws
+            WHERE ws.serial_no = sn.name
+              AND ws.is_outward = 1
+              AND ws.voucher_type IN ('Delivery Note', 'Sales Invoice')
+              AND ws.is_cancelled = 0
+              AND ws.docstatus = 1
+            ORDER BY
+                ws.posting_datetime ASC,
+                ws.creation ASC,
+                ws.name ASC
+            LIMIT 1
+        )              
 
         {where_clause}
 
