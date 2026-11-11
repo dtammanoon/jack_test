@@ -213,8 +213,8 @@ def execute(filters=None):
             sn.maintenance_status AS maintenance_status,            
             
             CASE
-                WHEN IFNULL(sn.warehouse, '') != ''
-                THEN latest_detail.to_shelf
+                WHEN latest_entry.voucher_type = 'Stock Entry'
+                    THEN latest_detail.to_shelf
                 ELSE NULL
             END AS target_shelf,
             latest_entry.voucher_no AS latest_voucher,
@@ -317,24 +317,30 @@ def execute(filters=None):
             GROUP BY e.serial_no
         ) nxt
             ON nxt.serial_no = sn.name
+
     LEFT JOIN `tabSerial and Batch Entry` latest_entry
         ON latest_entry.serial_no = sn.name
-        AND latest_entry.is_outward = 0
         AND latest_entry.is_cancelled = 0
+        AND latest_entry.docstatus = 1
         AND latest_entry.name = (
             SELECT se2.name
             FROM `tabSerial and Batch Entry` se2
             WHERE se2.serial_no = sn.name
-            AND se2.is_outward = 0
             AND se2.is_cancelled = 0
+            AND se2.docstatus = 1
             ORDER BY
                 se2.posting_datetime DESC,
                 se2.creation DESC,
                 se2.name DESC
             LIMIT 1
         )
+
     LEFT JOIN `tabStock Entry Detail` latest_detail
-        ON latest_detail.name = latest_entry.voucher_detail_no      
+        ON latest_detail.name = latest_entry.voucher_detail_no
+
+    LEFT JOIN `tabDelivery Note Item` latest_dn_detail
+        ON latest_dn_detail.name = latest_entry.voucher_detail_no
+           
     LEFT JOIN `tabSerial and Batch Entry` warranty_start
         ON warranty_start.name = (
             SELECT ws.name
@@ -349,7 +355,7 @@ def execute(filters=None):
                 ws.creation ASC,
                 ws.name ASC
             LIMIT 1
-        )              
+        )                  
 
         {where_clause}
 
