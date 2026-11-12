@@ -98,6 +98,15 @@ before_request = [
     "jack_test.jack_test.overrides.gross_profit.install"
 ]
 
+
+override_doctype_class = {
+    "POS Invoice": "jack_test.overrides.pos_invoice.CustomPOSInvoice"
+}
+
+page_js = {
+    "point-of-sale": "public/js/pos_recent_order_fix.js"
+}
+
 # Apps
 # ------------------
 
