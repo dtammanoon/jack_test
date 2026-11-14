@@ -49,14 +49,14 @@ def execute(filters=None):
             "fieldname": "target_shelf",
             "label": "Target Shelf",
             "fieldtype": "Data",
-            "width": 120
+            "width": 100
         },        
         {
             "fieldname": "latest_voucher",
             "label": "Latest Voucher",
             "fieldtype": "Dynamic Link",
             "options": "latest_voucher_type",
-            "width": 170
+            "width": 190
         },
         {
             "fieldname": "latest_voucher_type",
@@ -359,9 +359,8 @@ def execute(filters=None):
 
         {where_clause}
 
-        ORDER BY
-            origin.posting_datetime DESC,
-            sn.serial_no ASC
+        ORDER BY            
+            sn.serial_no DESC
     """.format(where_clause=where_clause)
 
     data = frappe.db.sql(
