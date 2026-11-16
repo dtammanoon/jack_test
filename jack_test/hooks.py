@@ -40,7 +40,13 @@ fixtures = [
                 "POS Profile-custom_full_tax_invoice_series"
             ]]
         ]
-    }    
+    },
+    {
+        "dt": "Print Format",
+        "filters": [
+            ["name", "=", "POS Full Tax Invoice"]
+        ]
+    }        
 ]
 
 doc_events = {

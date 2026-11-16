@@ -1,0 +1,300 @@
+{
+ "doctype": "DocType",
+ "name": "POS Full Tax Invoice",
+ "module": "Jack Test",
+ "autoname": "naming_series:",
+ "naming_rule": "By \"Naming Series\" field",
+ "engine": "InnoDB",
+ "track_changes": 1,
+ "allow_rename": 0,
+ "is_submittable": 1,
+ "title_field": "pos_invoice",
+ "search_fields": "pos_invoice,customer,original_customer_name,full_tax_invoice_number",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "field_order": [
+  "naming_series",
+  "section_original",
+  "pos_invoice",
+  "pos_profile",
+  "company",
+  "pos_invoice_number",
+  "pos_posting_date",
+  "full_tax_invoice_date",
+  "full_tax_invoice_number",
+  "pos_posting_time",
+  "customer",
+  "original_customer_name",
+  "original_tax_id",
+  "pos_customer_address",
+  "pos_consolidated_invoice",
+  "replacement_of",
+  "pos_closing_entry",
+  "column_break_original",
+  "original_net_total",
+  "original_vat_amount",
+  "original_grand_total",
+  "original_paid_amount",
+  "section_buyer",
+  "buyer_name",
+  "buyer_tax_id",
+  "buyer_branch",
+  "buyer_address",
+  "buyer_email",
+  "section_replacement",
+  "issued_on",
+  "issued_by",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "PFTI-.YYYY.-",
+   "default": "PFTI-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_original",
+   "fieldtype": "Section Break",
+   "label": "Original POS Invoice"
+  },
+  {
+   "fieldname": "pos_invoice",
+   "fieldtype": "Link",
+   "label": "Original POS Invoice",
+   "options": "POS Invoice",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "pos_invoice_number",
+   "fieldtype": "Data",
+   "label": "POS Invoice Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pos_posting_date",
+   "fieldtype": "Date",
+   "label": "POS Invoice Date",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "pos_posting_time",
+   "fieldtype": "Time",
+   "label": "POS Invoice Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "original_customer_name",
+   "fieldtype": "Data",
+   "label": "Original Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "original_tax_id",
+   "fieldtype": "Data",
+   "label": "Original Tax ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pos_customer_address",
+   "fieldtype": "Link",
+   "label": "Original Customer Address",
+   "options": "Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pos_consolidated_invoice",
+   "fieldtype": "Link",
+   "label": "Consolidated Sales Invoice",
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pos_closing_entry",
+   "fieldtype": "Link",
+   "label": "POS Closing Entry",
+   "options": "POS Closing Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_original",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "original_net_total",
+   "fieldtype": "Currency",
+   "label": "Original Net Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "original_vat_amount",
+   "fieldtype": "Currency",
+   "label": "Original VAT Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "original_grand_total",
+   "fieldtype": "Currency",
+   "label": "Original Grand Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "original_paid_amount",
+   "fieldtype": "Currency",
+   "label": "Original Paid Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_buyer",
+   "fieldtype": "Section Break",
+   "label": "Buyer Details for Full Tax Invoice"
+  },
+  {
+   "fieldname": "buyer_name",
+   "fieldtype": "Data",
+   "label": "Buyer Name"
+  },
+  {
+   "fieldname": "buyer_tax_id",
+   "fieldtype": "Data",
+   "label": "Buyer Tax ID"
+  },
+  {
+   "fieldname": "buyer_branch",
+   "fieldtype": "Data",
+   "label": "Buyer Branch",
+   "description": "For example: Head Office or Branch number"
+  },
+  {
+   "fieldname": "buyer_address",
+   "fieldtype": "Small Text",
+   "label": "Buyer Address"
+  },
+  {
+   "fieldname": "buyer_email",
+   "fieldtype": "Data",
+   "label": "Buyer Email"
+  },
+  {
+   "fieldname": "section_replacement",
+   "fieldtype": "Section Break",
+   "label": "Replacement Full Tax Invoice"
+  },
+  {
+   "fieldname": "issued_on",
+   "fieldtype": "Datetime",
+   "label": "Issued On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "issued_by",
+   "fieldtype": "Link",
+   "label": "Issued By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "pos_profile",
+   "fieldtype": "Link",
+   "label": "POS Profile",
+   "options": "POS Profile",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "full_tax_invoice_date",
+   "fieldtype": "Date",
+   "label": "Full Tax Invoice Date",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "full_tax_invoice_number",
+   "fieldtype": "Data",
+   "label": "Full Tax Invoice Number",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "replacement_of",
+   "fieldtype": "Link",
+   "label": "Replacement Of",
+   "options": "POS Full Tax Invoice",
+   "description": "Link to the cancelled Full Tax Invoice being replaced."
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Sales Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Sales User",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ]
+}
