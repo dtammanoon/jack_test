@@ -32,7 +32,15 @@ fixtures = [
     {
         "dt": "Client Script",
         "filters": [["module", "=", "Jack Test"]] # เปลี่ยนจาก "-" เป็น "="
-    }
+    },
+    {
+        "dt": "Custom Field",
+        "filters": [
+            ["name", "in", [
+                "POS Profile-custom_full_tax_invoice_series"
+            ]]
+        ]
+    }    
 ]
 
 doc_events = {
