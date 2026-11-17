@@ -1,23 +1,18 @@
 {
- "doctype": "DocType",
- "name": "POS Full Tax Invoice",
- "module": "Jack Test",
+ "actions": [],
  "autoname": "naming_series:",
- "naming_rule": "By \"Naming Series\" field",
+ "creation": "2026-11-17 11:28:26.956735",
+ "doctype": "DocType",
  "engine": "InnoDB",
- "track_changes": 1,
- "allow_rename": 0,
- "is_submittable": 1,
- "title_field": "pos_invoice",
- "search_fields": "pos_invoice,customer,original_customer_name,full_tax_invoice_number",
- "sort_field": "modified",
- "sort_order": "DESC",
  "field_order": [
   "naming_series",
   "section_original",
   "pos_invoice",
   "pos_profile",
   "company",
+  "branch",
+  "branch_address",
+  "billing_address",
   "pos_invoice_number",
   "pos_posting_date",
   "full_tax_invoice_date",
@@ -36,6 +31,8 @@
   "original_grand_total",
   "original_paid_amount",
   "section_buyer",
+  "buyer_customer",
+  "buyer_customer_address",
   "buyer_name",
   "buyer_tax_id",
   "buyer_branch",
@@ -44,15 +41,16 @@
   "section_replacement",
   "issued_on",
   "issued_by",
-  "remarks"
+  "remarks",
+  "amended_from"
  ],
  "fields": [
   {
+   "default": "PFTI-.YYYY.-",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
    "options": "PFTI-.YYYY.-",
-   "default": "PFTI-.YYYY.-",
    "reqd": 1
   },
   {
@@ -63,10 +61,10 @@
   {
    "fieldname": "pos_invoice",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Original POS Invoice",
    "options": "POS Invoice",
-   "reqd": 1,
-   "in_list_view": 1
+   "reqd": 1
   },
   {
    "fieldname": "company",
@@ -85,9 +83,9 @@
   {
    "fieldname": "pos_posting_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "POS Invoice Date",
-   "read_only": 1,
-   "in_list_view": 1
+   "read_only": 1
   },
   {
    "fieldname": "pos_posting_time",
@@ -98,10 +96,10 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Customer",
    "options": "Customer",
-   "read_only": 1,
-   "in_list_view": 1
+   "read_only": 1
   },
   {
    "fieldname": "original_customer_name",
@@ -180,10 +178,10 @@
    "label": "Buyer Tax ID"
   },
   {
+   "description": "For example: Head Office or Branch number",
    "fieldname": "buyer_branch",
    "fieldtype": "Data",
-   "label": "Buyer Branch",
-   "description": "For example: Head Office or Branch number"
+   "label": "Buyer Branch"
   },
   {
    "fieldname": "buyer_address",
@@ -229,72 +227,132 @@
   {
    "fieldname": "full_tax_invoice_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Full Tax Invoice Date",
-   "read_only": 1,
-   "in_list_view": 1
+   "read_only": 1
   },
   {
    "fieldname": "full_tax_invoice_number",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Full Tax Invoice Number",
-   "read_only": 1,
-   "in_list_view": 1
+   "read_only": 1
   },
   {
+   "description": "Link to the cancelled Full Tax Invoice being replaced.",
    "fieldname": "replacement_of",
    "fieldtype": "Link",
    "label": "Replacement Of",
+   "options": "POS Full Tax Invoice"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "branch_address",
+   "fieldtype": "Link",
+   "label": "Branch Address",
+   "options": "Branch Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "billing_address",
+   "fieldtype": "Link",
+   "label": "Issuer Billing Address",
+   "options": "Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "buyer_customer",
+   "fieldtype": "Link",
+   "label": "Buyer Customer",
+   "options": "Customer"
+  },
+  {
+   "depends_on": "eval:doc.buyer_customer",
+   "description": "Only addresses linked to the selected Buyer Customer are available.",
+   "fieldname": "buyer_customer_address",
+   "fieldtype": "Link",
+   "label": "Buyer Address",
+   "options": "Address"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
    "options": "POS Full Tax Invoice",
-   "description": "Link to the cancelled Full Tax Invoice being replaced."
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-11-17 18:43:47.481336",
+ "modified_by": "Administrator",
+ "module": "Jack Test",
+ "name": "POS Full Tax Invoice",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
  "permissions": [
   {
-   "role": "System Manager",
-   "read": 1,
-   "write": 1,
    "create": 1,
    "delete": 1,
-   "report": 1,
    "export": 1,
    "print": 1,
-   "share": 1
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
   },
   {
+   "create": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
    "role": "Accounts Manager",
-   "read": 1,
-   "write": 1,
-   "create": 1,
-   "report": 1,
-   "export": 1,
-   "print": 1
+   "write": 1
   },
   {
+   "create": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
    "role": "Accounts User",
-   "read": 1,
-   "write": 1,
-   "create": 1,
-   "report": 1,
-   "export": 1,
-   "print": 1
+   "write": 1
   },
   {
+   "create": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
    "role": "Sales Manager",
-   "read": 1,
-   "write": 1,
-   "create": 1,
-   "report": 1,
-   "export": 1,
-   "print": 1
+   "write": 1
   },
   {
-   "role": "Sales User",
-   "read": 1,
-   "write": 1,
    "create": 1,
-   "report": 1,
    "export": 1,
-   "print": 1
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "write": 1
   }
- ]
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "pos_invoice,customer,original_customer_name,full_tax_invoice_number",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "pos_invoice",
+ "track_changes": 1
 }

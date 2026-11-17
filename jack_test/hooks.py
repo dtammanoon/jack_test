@@ -46,6 +46,12 @@ fixtures = [
         "filters": [
             ["name", "=", "POS Full Tax Invoice"]
         ]
+    },
+    {
+        "dt": "Custom Workspace",
+        "filters": [
+            ["name", "=", "Selling"]
+        ]
     }        
 ]
 
@@ -120,6 +126,10 @@ override_doctype_class = {
 page_js = {
     "point-of-sale": "public/js/pos_recent_order_fix.js"
 }
+
+extend_bootinfo = [
+    "jack_test.overrides.selling_sidebar.add_pos_full_tax_invoice"
+]
 
 # Apps
 # ------------------
@@ -378,3 +388,8 @@ page_js = {
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+# Global Customer Link search: include Tax ID from linked Address.
+standard_queries = {
+    "Customer": "jack_test.overrides.customer_search.customer_query",
+}

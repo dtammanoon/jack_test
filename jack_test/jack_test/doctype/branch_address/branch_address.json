@@ -10,7 +10,8 @@
   "branch",
   "address",
   "billing_address",
-  "shipping_address"
+  "shipping_address",
+  "full_tax_invoice_series"
  ],
  "fields": [
   {
@@ -44,12 +45,18 @@
    "label": "Billing Address",
    "options": "Address",
    "reqd": 1
+  },
+  {
+   "description": "Naming pattern for POS Full Tax Invoice Number, e.g. TAX-B1-.YYYY.-.#####",
+   "fieldname": "full_tax_invoice_series",
+   "fieldtype": "Data",
+   "label": "Full Tax Invoice Series"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-26 19:04:52.581398",
+ "modified": "2026-11-17 10:10:23.246611",
  "modified_by": "Administrator",
  "module": "Jack Test",
  "name": "Branch Address",
