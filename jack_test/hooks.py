@@ -34,14 +34,6 @@ fixtures = [
         "filters": [["module", "=", "Jack Test"]] # เปลี่ยนจาก "-" เป็น "="
     },
     {
-        "dt": "Custom Field",
-        "filters": [
-            ["name", "in", [
-                "POS Profile-custom_full_tax_invoice_series"
-            ]]
-        ]
-    },
-    {
         "dt": "Print Format",
         "filters": [
             ["name", "=", "POS Full Tax Invoice"]
@@ -118,7 +110,7 @@ before_request = [
     "jack_test.jack_test.overrides.gross_profit.install"
 ]
 
-
+# ป้องกัน show Zero Valuation Rate ใน POS 
 override_doctype_class = {
     "POS Invoice": "jack_test.overrides.pos_invoice.CustomPOSInvoice"
 }
