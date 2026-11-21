@@ -11,7 +11,8 @@
   "address",
   "billing_address",
   "shipping_address",
-  "full_tax_invoice_series"
+  "full_tax_invoice_series",
+  "credit_note_series"
  ],
  "fields": [
   {
@@ -51,12 +52,18 @@
    "fieldname": "full_tax_invoice_series",
    "fieldtype": "Data",
    "label": "Full Tax Invoice Series"
+  },
+  {
+   "description": "Naming pattern for POS Full Tax Invoice Number, e.g. CN-B1-.YYYY.-.#####",
+   "fieldname": "credit_note_series",
+   "fieldtype": "Data",
+   "label": "Credit Note Series"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-17 10:10:23.246611",
+ "modified": "2026-11-18 15:56:00.150734",
  "modified_by": "Administrator",
  "module": "Jack Test",
  "name": "Branch Address",

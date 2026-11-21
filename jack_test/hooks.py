@@ -106,6 +106,12 @@ for dt in SHELF_DOCTYPES:
         doc_events[dt] = {}
     doc_events[dt]["validate"] = "jack_test.stock_shelf.validate_shelf"
 
+# POS Invoice: enforce Credit Note cancellation and Return LIFO
+doc_events["POS Invoice"]["before_cancel"] = (
+    "jack_test.jack_test.doctype.pos_full_tax_invoice."
+    "pos_full_tax_invoice.before_cancel_pos_invoice"
+)
+
 before_request = [
     "jack_test.jack_test.overrides.gross_profit.install"
 ]
@@ -117,6 +123,11 @@ override_doctype_class = {
 
 page_js = {
     "point-of-sale": "public/js/pos_recent_order_fix.js"
+}
+
+# POS Invoice: Create/Open POS Full Tax Credit Note from submitted Return
+doctype_js = {
+    "POS Invoice": "public/js/pos_invoice_credit_note.js"
 }
 
 extend_bootinfo = [

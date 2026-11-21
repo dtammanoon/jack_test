@@ -190,8 +190,8 @@ def execute(filters=None):
         SELECT
             sn.name AS serial_no,
             sn.item_code AS item_code,
-            origin.incoming_rate AS actual_cost,
-            origin.posting_datetime AS cost_date,
+            current_cost.incoming_rate AS actual_cost,
+            current_cost.posting_datetime AS cost_date,
             origin.voucher_no AS origin_voucher,
             origin.voucher_type AS origin_voucher_type,
             origin.warehouse AS origin_warehouse,
@@ -234,7 +234,24 @@ def execute(filters=None):
                 ORDER BY e.posting_datetime ASC, e.creation ASC
                 LIMIT 1
             )
-
+            
+        LEFT JOIN `tabSerial and Batch Entry` current_cost
+            ON current_cost.name = (
+                SELECT e.name
+                FROM `tabSerial and Batch Entry` e
+                WHERE e.serial_no = sn.name
+                AND e.item_code = sn.item_code
+                AND e.type_of_transaction = 'Inward'
+                AND e.qty > 0
+                AND e.is_cancelled = 0
+                AND e.docstatus = 1
+                ORDER BY
+                    e.posting_datetime DESC,
+                    e.creation DESC,
+                    e.name DESC
+                LIMIT 1
+            )
+            
           LEFT JOIN (
             SELECT
                 p.fg_serial_no,

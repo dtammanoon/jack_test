@@ -6,8 +6,14 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "document_type",
   "section_original",
   "pos_invoice",
+  "return_pos_invoice",
+  "original_full_tax_invoice",
+  "credit_note_number",
+  "credit_note_date",
+  "credit_note_reason",
   "pos_profile",
   "company",
   "branch",
@@ -30,6 +36,29 @@
   "original_vat_amount",
   "original_grand_total",
   "original_paid_amount",
+  "section_credit_note_summary",
+  "credit_note_count",
+  "active_credit_note_count",
+  "column_break_credit_note_summary",
+  "total_returned_net",
+  "total_returned_vat",
+  "total_returned_grand_total",
+  "remaining_net",
+  "remaining_vat",
+  "remaining_grand_total",
+  "section_credit_note_snapshot",
+  "credit_note_sequence",
+  "current_return_net",
+  "current_return_vat",
+  "current_return_grand_total",
+  "section_credit_note_cumulative",
+  "cumulative_returned_net",
+  "cumulative_returned_vat",
+  "cumulative_returned_grand_total",
+  "section_credit_note_remaining",
+  "remaining_net_after",
+  "remaining_vat_after",
+  "remaining_grand_total_after",
   "section_buyer",
   "buyer_customer",
   "buyer_customer_address",
@@ -64,7 +93,8 @@
    "in_list_view": 1,
    "label": "Original POS Invoice",
    "options": "POS Invoice",
-   "reqd": 1
+   "reqd": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "company",
@@ -72,26 +102,30 @@
    "label": "Company",
    "options": "Company",
    "read_only": 1,
-   "reqd": 1
+   "reqd": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "pos_invoice_number",
    "fieldtype": "Data",
    "label": "POS Invoice Number",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "pos_posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "POS Invoice Date",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "pos_posting_time",
    "fieldtype": "Time",
    "label": "POS Invoice Time",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "customer",
@@ -99,40 +133,46 @@
    "in_list_view": 1,
    "label": "Customer",
    "options": "Customer",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "original_customer_name",
    "fieldtype": "Data",
    "label": "Original Customer Name",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "original_tax_id",
    "fieldtype": "Data",
    "label": "Original Tax ID",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "pos_customer_address",
    "fieldtype": "Link",
    "label": "Original Customer Address",
    "options": "Address",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "pos_consolidated_invoice",
    "fieldtype": "Link",
    "label": "Consolidated Sales Invoice",
    "options": "Sales Invoice",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "pos_closing_entry",
    "fieldtype": "Link",
    "label": "POS Closing Entry",
    "options": "POS Closing Entry",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "column_break_original",
@@ -142,25 +182,191 @@
    "fieldname": "original_net_total",
    "fieldtype": "Currency",
    "label": "Original Net Total",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "original_vat_amount",
    "fieldtype": "Currency",
    "label": "Original VAT Amount",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "original_grand_total",
    "fieldtype": "Currency",
    "label": "Original Grand Total",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "original_paid_amount",
    "fieldtype": "Currency",
    "label": "Original Paid Amount",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "section_credit_note_summary",
+   "label": "Credit Note Summary",
+   "fieldtype": "Section Break",
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "credit_note_count",
+   "label": "Credit Note Count (Lifetime)",
+   "fieldtype": "Int",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "active_credit_note_count",
+   "label": "Active Credit Note Count",
+   "fieldtype": "Int",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "column_break_credit_note_summary",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_returned_net",
+   "label": "Total Returned Net",
+   "fieldtype": "Currency",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "total_returned_vat",
+   "label": "Total Returned VAT",
+   "fieldtype": "Currency",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "total_returned_grand_total",
+   "label": "Total Returned Grand Total",
+   "fieldtype": "Currency",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "remaining_net",
+   "label": "Remaining Net",
+   "fieldtype": "Currency",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "remaining_vat",
+   "label": "Remaining VAT",
+   "fieldtype": "Currency",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "remaining_grand_total",
+   "label": "Remaining Grand Total",
+   "fieldtype": "Currency",
+   "default": "0",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Invoice'"
+  },
+  {
+   "fieldname": "section_credit_note_snapshot",
+   "label": "Credit Note Snapshot",
+   "fieldtype": "Section Break",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "credit_note_sequence",
+   "label": "Credit Note Sequence",
+   "fieldtype": "Int",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "current_return_net",
+   "label": "Current Return Net",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "current_return_vat",
+   "label": "Current Return VAT",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "current_return_grand_total",
+   "label": "Current Return Grand Total",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "section_credit_note_cumulative",
+   "label": "Cumulative Amount After This Credit Note",
+   "fieldtype": "Section Break",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "cumulative_returned_net",
+   "label": "Cumulative Returned Net",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "cumulative_returned_vat",
+   "label": "Cumulative Returned VAT",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "cumulative_returned_grand_total",
+   "label": "Cumulative Returned Grand Total",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "section_credit_note_remaining",
+   "label": "Remaining Amount After This Credit Note",
+   "fieldtype": "Section Break",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "remaining_net_after",
+   "label": "Remaining Net After",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "remaining_vat_after",
+   "label": "Remaining VAT After",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
+  },
+  {
+   "fieldname": "remaining_grand_total_after",
+   "label": "Remaining Grand Total After",
+   "fieldtype": "Currency",
+   "read_only": 1,
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "section_buyer",
@@ -170,28 +376,33 @@
   {
    "fieldname": "buyer_name",
    "fieldtype": "Data",
-   "label": "Buyer Name"
+   "label": "Buyer Name",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "buyer_tax_id",
    "fieldtype": "Data",
-   "label": "Buyer Tax ID"
+   "label": "Buyer Tax ID",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "description": "For example: Head Office or Branch number",
    "fieldname": "buyer_branch",
    "fieldtype": "Data",
-   "label": "Buyer Branch"
+   "label": "Buyer Branch",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "buyer_address",
    "fieldtype": "Small Text",
-   "label": "Buyer Address"
+   "label": "Buyer Address",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "buyer_email",
    "fieldtype": "Data",
-   "label": "Buyer Email"
+   "label": "Buyer Email",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "section_replacement",
@@ -214,7 +425,8 @@
   {
    "fieldname": "remarks",
    "fieldtype": "Small Text",
-   "label": "Remarks"
+   "label": "Remarks",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "pos_profile",
@@ -222,55 +434,63 @@
    "label": "POS Profile",
    "options": "POS Profile",
    "read_only": 1,
-   "reqd": 1
+   "reqd": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "full_tax_invoice_date",
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Full Tax Invoice Date",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "full_tax_invoice_number",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Full Tax Invoice Number",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "description": "Link to the cancelled Full Tax Invoice being replaced.",
    "fieldname": "replacement_of",
    "fieldtype": "Link",
    "label": "Replacement Of",
-   "options": "POS Full Tax Invoice"
+   "options": "POS Full Tax Invoice",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
    "options": "Branch",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "branch_address",
    "fieldtype": "Link",
    "label": "Branch Address",
    "options": "Branch Address",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "billing_address",
    "fieldtype": "Link",
    "label": "Issuer Billing Address",
    "options": "Address",
-   "read_only": 1
+   "read_only": 1,
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "buyer_customer",
    "fieldtype": "Link",
    "label": "Buyer Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "depends_on": "eval:doc.buyer_customer",
@@ -278,7 +498,8 @@
    "fieldname": "buyer_customer_address",
    "fieldtype": "Link",
    "label": "Buyer Address",
-   "options": "Address"
+   "options": "Address",
+   "read_only_depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   },
   {
    "fieldname": "amended_from",
@@ -289,6 +510,54 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Select",
+   "label": "Document Type",
+   "options": "Full Tax Invoice\nFull Tax Credit Note",
+   "default": "Full Tax Invoice",
+   "reqd": 1,
+   "in_list_view": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "return_pos_invoice",
+   "fieldtype": "Link",
+   "label": "Return POS Invoice",
+   "options": "POS Invoice",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'",
+   "read_only": 1
+  },
+  {
+   "fieldname": "original_full_tax_invoice",
+   "fieldtype": "Link",
+   "label": "Original Full Tax Invoice",
+   "options": "POS Full Tax Invoice",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'",
+   "read_only": 1
+  },
+  {
+   "fieldname": "credit_note_number",
+   "fieldtype": "Data",
+   "label": "Credit Note Number",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "credit_note_date",
+   "fieldtype": "Date",
+   "label": "Credit Note Date",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "credit_note_reason",
+   "fieldtype": "Small Text",
+   "label": "Credit Note Reason",
+   "depends_on": "eval:doc.document_type == 'Full Tax Credit Note'"
   }
  ],
  "is_submittable": 1,
