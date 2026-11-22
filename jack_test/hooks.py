@@ -32,19 +32,7 @@ fixtures = [
     {
         "dt": "Client Script",
         "filters": [["module", "=", "Jack Test"]] # เปลี่ยนจาก "-" เป็น "="
-    },
-    {
-        "dt": "Print Format",
-        "filters": [
-            ["name", "=", "POS Full Tax Invoice"]
-        ]
-    },
-    {
-        "dt": "Custom Workspace",
-        "filters": [
-            ["name", "=", "Selling"]
-        ]
-    }        
+    }
 ]
 
 doc_events = {
