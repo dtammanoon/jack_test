@@ -110,12 +110,18 @@ override_doctype_class = {
 }
 
 page_js = {
-    "point-of-sale": "public/js/pos_recent_order_fix.js"
+    "point-of-sale": "public/js/pos_recent_order_fix.js",
+    "print": "public/js/pos_full_tax_invoice_print_page.js"
 }
 
 # POS Invoice: Create/Open POS Full Tax Credit Note from submitted Return
 doctype_js = {
-    "POS Invoice": "public/js/pos_invoice_credit_note.js"
+    "POS Invoice": "public/js/pos_invoice_credit_note.js",
+    "POS Full Tax Invoice": "public/js/pos_full_tax_invoice_print.js"
+}
+
+doctype_list_js = {
+    "POS Full Tax Invoice": "public/js/pos_full_tax_invoice_list.js"
 }
 
 extend_bootinfo = [
