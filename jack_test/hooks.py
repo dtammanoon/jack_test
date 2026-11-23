@@ -117,7 +117,8 @@ page_js = {
 # POS Invoice: Create/Open POS Full Tax Credit Note from submitted Return
 doctype_js = {
     "POS Invoice": "public/js/pos_invoice_credit_note.js",
-    "POS Full Tax Invoice": "public/js/pos_full_tax_invoice_print.js"
+    "POS Full Tax Invoice": "public/js/pos_full_tax_invoice_print.js",
+    "Sales Invoice": "public/js/sales_invoice_conditional_print_format.js"
 }
 
 doctype_list_js = {
