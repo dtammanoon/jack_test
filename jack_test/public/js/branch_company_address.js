@@ -1,5 +1,4 @@
 (() => {
-    // Quotation แยกไปอยู่ไฟล์ quotation_from_supplier.js แล้ว
     const BRANCH_ADDR_DOCTYPES = {
         'Sales Order':   'customer',
         'Delivery Note': 'customer',
@@ -11,14 +10,13 @@
         billing_address: ['company_address', 'company_address_display'],
     };
 
-    const RETRY_DELAYS = [800, 2000, 3500];
+    const RETRY_DELAYS = [300, 800, 1500, 3000];
 
     function session_branch() {
         return frappe.defaults.get_user_default('branch')
             || frappe.defaults.get_user_default('Branch');
     }
 
-    // เอกสารใหม่ที่ยังไม่ Save (รวมที่ map มาจาก SO/DN) และไม่ใช่ Amend
     function is_valid_new(frm) {
         return frm.is_new() && !frm.doc.amended_from;
     }
@@ -41,6 +39,7 @@
     async function apply_branch_address(frm) {
         if (!is_valid_new(frm)) return;
 
+        // ถ้ายังไม่มี branch ให้ดึงจาก session default
         if (frm.fields_dict.branch && !frm.doc.branch) {
             const b = session_branch();
             if (b) await frm.set_value('branch', b);
@@ -53,10 +52,10 @@
             .filter(([, [addr_field]]) => frm.fields_dict[addr_field]);
         if (!targets.length) return;
 
-        // ดึงเฉพาะชื่อที่อยู่ (get_value ไม่อนุญาตฟิลด์ *_display)
         const r = await frappe.db.get_value('Branch Address', { branch }, targets.map(([src]) => src));
         const v = r.message || {};
-        if (!frm.is_new()) return;
+        
+        if (!is_valid_new(frm)) return;
 
         for (const [src, [addr_field, display_field]] of targets) {
             if (v[src]) {
@@ -68,9 +67,8 @@
     Object.entries(BRANCH_ADDR_DOCTYPES).forEach(([dt, party_field]) => {
         frappe.ui.form.on(dt, {
             refresh(frm) {
-                if (is_valid_new(frm) && !frm._branch_addr_done) {
-                    frm._branch_addr_done = true;
-                    frappe.after_ajax(() => apply_branch_address(frm));
+                if (is_valid_new(frm)) {
+                    // รันซ้ำหลายรอบเพื่อดักจังหวะที่ ERPNext เผลอเอา Address พระราม 9 มาทับตอนโหลดหน้า
                     RETRY_DELAYS.forEach(ms => setTimeout(() => apply_branch_address(frm), ms));
                 }
             },

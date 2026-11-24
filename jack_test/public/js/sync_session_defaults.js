@@ -6,71 +6,118 @@
         cost_center: "cost_center",
     };
 
-    // DocType ที่ไม่ต้องการให้ sync
     const SKIP_DOCTYPES = new Set([
-        "Session Default Settings", "User", "Company", "Branch", "Cost Center",
+        "Session Default Settings", "Session Default Selected",
+        "User", "Company", "Branch", "Cost Center",
     ]);
 
-    // DocType ที่อยากให้ sync ทันทีตอนแก้ฟิลด์ (ก่อน Save)
+    // DocType ที่ให้ sync ทันทีตอนแก้ฟิลด์ (ก่อน Save)
     const LIVE_DOCTYPES = [
         "Sales Invoice", "Purchase Invoice", "Sales Order", "Purchase Order",
         "Delivery Note", "Purchase Receipt", "Quotation", "Material Request",
         "Payment Entry", "Stock Entry", "Expense Claim",
     ];
 
-    const METHOD =
+    const SET_METHOD =
         "frappe.core.doctype.session_default_settings.session_default_settings.set_session_default_values";
+    const GET_SELECTED_METHOD = "jack_test.api.session_defaults.get_selected";
 
-    let pending = null;
+    let selected = {};          // ค่าที่ผู้ใช้เลือกเอง (จาก Session Default Selected)
+    let selectedPromise = null;
+    let busy = false;
+    let again = false;
+    let timer = null;
 
-    function collect(frm) {
-        const values = {};
-        for (const [key, field] of Object.entries(FIELD_MAP)) {
-            if (!frm.fields_dict[field]) continue;          // ฟอร์มนี้ไม่มีฟิลด์นี้
-            const val = frm.doc[field];
-            if (!val) continue;
-            const current = (frappe.boot.user.defaults || {})[key];
-            if (current !== val) values[key] = val;
+    function loadSelected() {
+        if (!selectedPromise) {
+            selectedPromise = frappe.xcall(GET_SELECTED_METHOD)
+                .then((r) => (selected = r || {}))
+                .catch(() => (selected = {}));
         }
-        return values;
+        return selectedPromise;
     }
 
-    function sync(frm) {
-        if (!frm || !frm.doc || SKIP_DOCTYPES.has(frm.doctype)) return;
+    // ฟอร์มเอกสารที่กำลังเปิดอยู่จริง (ถ้าไม่ได้อยู่ในฟอร์ม จะคืน null)
+    function currentForm() {
+        const route = frappe.get_route() || [];
+        if (route[0] !== "Form") return null;
 
-        const values = collect(frm);
-        if (!Object.keys(values).length) return;
+        const frm = window.cur_frm;
+        if (!frm || !frm.doc || frm.doctype !== route[1]) return null;
+        if (SKIP_DOCTYPES.has(frm.doctype)) return null;
+        return frm;
+    }
 
-        const sig = JSON.stringify(values);
-        if (pending === sig) return;                        // กันยิงซ้ำ
-        pending = sig;
+    // ค่าที่ Session Defaults "ควรจะเป็น" ณ ตอนนี้
+    function targetValues() {
+        const target = Object.assign({}, selected);   // ฐาน = ค่าที่เลือกเก็บไว้
 
-        frappe.call({
-            method: METHOD,
-            args: {
+        const frm = currentForm();
+        if (frm) {
+            for (const [key, field] of Object.entries(FIELD_MAP)) {
+                if (frm.fields_dict[field] && frm.doc[field]) {
+                    target[key] = frm.doc[field];      // ทับด้วยค่าจากเอกสาร
+                }
+            }
+        }
+        return target;
+    }
+
+    function diffWithCurrent(target) {
+        const current = frappe.boot.user.defaults || {};
+        const out = {};
+        for (const [k, v] of Object.entries(target)) {
+            if (v && current[k] !== v) out[k] = v;
+        }
+        return out;
+    }
+
+    async function reconcile() {
+        if (busy) { again = true; return; }
+        busy = true;
+
+        try {
+            await loadSelected();
+            const values = diffWithCurrent(targetValues());
+            if (!Object.keys(values).length) return;
+
+            const r = await frappe.xcall(SET_METHOD, {
                 default_values: values,
-                jack_silent_sync: 1,      // marker: ต้องอยู่ใน args เท่านั้น
-            },
-            freeze: false,
-        }).then((r) => {
-            if (r.message === "success") {
+                jack_silent_sync: 1,   // ไม่บันทึกเป็นค่าที่เลือก และไม่ redirect ไป Desktop
+            });
+
+            if (r === "success") {
                 for (const [k, v] of Object.entries(values)) {
                     frappe.defaults.set_user_default_local(k, v);
                 }
                 frappe.show_alert({
-                    message: __("Session Defaults updated: {0}",
-                        [Object.values(values).join(", ")]),
-                    indicator: "blue",
+                    message: __("Session Defaults: {0}", [Object.values(values).join(", ")]),
+                    indicator: currentForm() ? "blue" : "green",
                 }, 3);
             }
-        }).always(() => { pending = null; });
+        } catch (e) {
+            console.error("[jack_test] session defaults sync failed", e);
+        } finally {
+            busy = false;
+            if (again) { again = false; schedule(); }
+        }
     }
 
-    // 1) ตอนเปิดหรือ refresh ฟอร์ม (ทุก DocType)
-    $(document).on("form-refresh", (e, frm) => sync(frm));
+    function schedule() {
+        clearTimeout(timer);
+        timer = setTimeout(reconcile, 300);
+    }
 
-    // 2) ตอนผู้ใช้เปลี่ยนค่าฟิลด์ (เฉพาะ DocType ที่ระบุ)
+    // เปิดหรือ refresh ฟอร์ม
+    $(document).on("form-refresh", schedule);
+
+    // เปลี่ยนหน้า (รวมถึงออกจากเอกสาร) -> คืนค่าที่เลือกไว้
+    if (frappe.router && frappe.router.on) {
+        frappe.router.on("change", schedule);
+    }
+
+    // แก้ค่า Company / Branch / Cost Center ในฟอร์ม
     const handlers = {};
-    Object.values(FIELD_MAP).forEach((f) => (handlers[f] = (frm) => sync(frm)));
+    Object.values(FIELD_MAP).forEach((f) => (handlers[f] = schedule));
     LIVE_DOCTYPES.forEach((dt) => frappe.ui.form.on(dt, handlers));
 })();

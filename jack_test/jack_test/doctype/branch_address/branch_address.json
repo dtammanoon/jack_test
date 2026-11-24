@@ -51,19 +51,20 @@
    "description": "Naming pattern for POS Full Tax Invoice Number, e.g. TAX-B1-.YYYY.-.#####",
    "fieldname": "full_tax_invoice_series",
    "fieldtype": "Data",
-   "label": "Full Tax Invoice Series"
+   "label": "POS Full Tax Invoice Series"
   },
   {
-   "description": "Naming pattern for POS Full Tax Invoice Number, e.g. CN-B1-.YYYY.-.#####",
+   "description": "Naming pattern for POS Full Tax Credit Note Number, e.g. CN-B1-.YYYY.-.#####",
    "fieldname": "credit_note_series",
    "fieldtype": "Data",
-   "label": "Credit Note Series"
+   "label": "POS Full Tax Credit Note Series"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "link_display_mode": "Search",
  "links": [],
- "modified": "2026-11-18 15:56:00.150734",
+ "modified": "2026-11-24 17:05:08.591144",
  "modified_by": "Administrator",
  "module": "Jack Test",
  "name": "Branch Address",

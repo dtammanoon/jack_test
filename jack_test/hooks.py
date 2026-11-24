@@ -35,13 +35,19 @@ fixtures = [
     }
 ]
 
+_branch_addr = "jack_test.overrides.branch_company_address.set_company_address_from_branch"
+
 doc_events = {
     "Book Order": {
         "before_save": "jack_test.jack_test.doctype.book_order.book_order.compute_total",
         "before_submit": "jack_test.jack_test.doctype.book_order.book_order.confirm_date",
         "on_submit": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty",
         "on_cancel": "jack_test.jack_test.doctype.book_order.book_order.update_ordered_qty"
-    }       
+    },
+    "Sales Invoice": {"validate": _branch_addr},
+    "Sales Order":   {"validate": _branch_addr},
+    "Delivery Note": {"validate": _branch_addr},
+    "Quotation":     {"validate": _branch_addr}           
 }
 
 
@@ -76,6 +82,8 @@ before_request = [
 override_whitelisted_methods = {
     "erpnext.controllers.stock_controller.show_accounting_ledger_preview":
         "jack_test.overrides.ledger_preview.show_accounting_ledger_preview",
+    "frappe.core.doctype.session_default_settings.session_default_settings.set_session_default_values":
+        "jack_test.api.session_defaults.set_session_default_values",        
 }
 
 jinja = {
